@@ -3,11 +3,11 @@ import React, { Component } from 'react';
 import { MDBBtn,MDBDataTable, Row, Col, Card, CardBody } from 'mdbreact';
 
 import axios from 'axios';
+import GlobalSetting from './GlobalSetting';
+// const url = 'http://10.0.28.126:90/api/userlists';
+// const baseUrl = 'http://jsonplaceholder.typicode.com/posts';
 
-const url = 'http://10.0.28.126:90/api/userlists';
-const baseUrl = 'http://jsonplaceholder.typicode.com/posts';
-
-
+const url=GlobalSetting.url + `userlists/`;
 
 
 class User extends Component {

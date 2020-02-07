@@ -4,7 +4,7 @@ import {  MDBDataTable, MDBBtn, MDBInput,MDBContainer,MDBModal, MDBModalBody,MDB
 import GlobalSetting from './GlobalSetting';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import 'react-toastify/dist/ReactToastify.css';
+
 
 class Task extends React.Component {
     closeAfter15 = () => toast("YOLO", { autoClose: 15000 });
