@@ -1,6 +1,6 @@
 class GlobalSetting {
     constructor() {
-        this.url = 'http://10.0.28.126:90/api/';
+        this.url = 'http://127.0.0.1:8000/api/';
     }
 }
 export default (new GlobalSetting);
