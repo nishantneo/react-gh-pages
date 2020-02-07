@@ -122,6 +122,7 @@ class Task extends React.Component {
                         <MDBInput  icon="user" />
                     </MDBModalBody>
                     <MDBModalFooter>
+
                         <MDBBtn color="secondary" onClick={this.toggle}>Close</MDBBtn>
                         <MDBBtn color="primary">Save changes</MDBBtn>
                     </MDBModalFooter>
