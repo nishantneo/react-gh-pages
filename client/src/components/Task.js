@@ -1,51 +1,149 @@
 import React from "react";
 import {  MDBDataTable, MDBBtn, MDBInput,MDBContainer,MDBModal, MDBModalBody,MDBModalHeader, MDBModalFooter } from "mdbreact";
-// import { ToastProvider, useToasts } from 'react-toast-notifications';
 import GlobalSetting from './GlobalSetting';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import 'react-toastify/dist/ReactToastify.css';
+import {add, getProfile,fetchUser} from './UserFunctions';
+import 'react-notifications/lib/notifications.css';
+import {NotificationContainer, NotificationManager} from 'react-notifications';
+
+
+
+const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
+const validateForm = (errors) => {
+    let valid = true;
+    Object.values(errors).forEach(
+        (val) => val.length > 0 && (valid = false)
+
+    );
+    return valid;
+}
 
 class Task extends React.Component {
-    closeAfter15 = () => toast("YOLO", { autoClose: 15000 });
-    state = {
-        columns: [
-            {
-                field: 'id',
-                label: 'No'
+
+    constructor() {
+        super()
+        this.state = {
+            columns: [
+                {
+                    field: 'id',
+                    label: 'No'
+                },
+                {
+                    field: 'name',
+                    label: 'Name'
+                },
+                {
+                    field: 'email',
+                    label: 'Email'
+                },
+                {
+                    field: 'edit',
+                    label: 'Edit'
+                },
+                {
+                    field: 'delete',
+                    label: 'Delete'
+                }
+            ],
+            rows: [],
+            user: [],
+            input: '',
+            name: '',
+            email:'',
+            password:'',
+            id:'',
+            errors: {
+                name: '',
+                email: '',
+                password: '',
             },
-            {
-                field: 'name',
-                label: 'Name'
-            },
-            {
-                field: 'email',
-                label: 'Email'
-            },
-            {
-                field: 'edit',
-                label: 'Edit'
-            },
-            {
-                field: 'delete',
-                label: 'Delete'
-            }
-        ],
-        rows: [],
-        input: '',
-        modal: false
+            modal: false,
+            showModal2:false
+
+        }
+        this.onChange = this.onChange.bind(this)
+        this.onSubmit = this.onSubmit.bind(this)
+
     }
-    toggle = () => {
+    onChange (e) {
+        this.setState({ [e.target.name]: e.target.value })
+    }
+
+    handleChange = (event) => {
+        event.preventDefault();
+        const { name, value } = event.target;
+        let errors = this.state.errors;
+
+        switch (name) {
+            case 'name':
+                errors.name =
+                    value.length < 5
+                        ? 'Full Name must be 5 characters long!'
+                        : '';
+                break;
+            case 'email':
+                errors.email =
+                    validEmailRegex.test(value)
+                        ? ''
+                        : 'Email is not valid!';
+                break;
+            case 'password':
+                errors.password =
+                    value.length < 8
+                        ? 'Password must be 8 characters long!'
+                        : '';
+                break;
+            default:
+                break;
+        }
+
+        this.setState({errors, [name]: value});
+    }
+    onSubmit (e) {
+        e.preventDefault()
+
+        const newTask = {
+            name: this.state.name,
+            email: this.state.email,
+            password: this.state.password
+        }
+
+        if(validateForm(this.state.errors)) {
+            add(newTask).then(res => {
+                if (res.ok)
+                {
+                    GlobalSetting.createNotification('success','Record Submitted Successfully.');
+                    this.getTasks();
+                }
+            })
+        }
+        else
+        {
+            console.log('Invalid Form')
+            this.props.history.push(`/task`)
+        }
+        this.addToggle();
+    }
+    addToggle = () => {
+
         this.setState({
-            modal: !this.state.modal
+            modal: !this.state.showModal2,
+            showModal1:false
+        });
+    }
+    editToggle = () => {
+
+        this.setState({
+            modal: !this.state.showModal2,
+            showModal2:false
         });
     }
 
     componentDidMount() {
-        this.getMovies();
+        this.getTasks();
+
     }
 
-    getMovies = () => {
+    getTasks = () => {
 
         let uri = GlobalSetting.url + `userlists/`;
         fetch(uri, {
@@ -59,8 +157,8 @@ class Task extends React.Component {
                     id: item.id,
                     name: item.name,
                     email: item.email,
-                    delete: <MDBBtn color="info"  onClick={() => this.deleteMovie(item.id)}>X</MDBBtn>,
-                    edit: <MDBBtn color="info" onClick={() => this.editMovie(item.id)}>Edit</MDBBtn>,
+                    delete: <MDBBtn color="info"  onClick={() => this.deleteTask(item.id)}>X</MDBBtn>,
+                    edit: <MDBBtn color="info"  data-toggle="modal" onClick={() => this.editTask(item.id)}>Edit</MDBBtn>,
 
                 }));
 
@@ -69,63 +167,82 @@ class Task extends React.Component {
             .catch(err => console.error(err));
     }
 
-    addMovie = () => {
-        fetch("https://man-movies-api.herokuapp.com/movies", {
-            method: "POST",
-            body: JSON.stringify({
-                title: this.state.input
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(res => {
-                if (res.ok) this.getMovies();
-            })
-            .catch(err => console.error(err));
-    }
+
 
     updateInput = (value) => this.setState({ input: value });
 
-    deleteMovie = (id) => {
-       // const { addToast } = useToasts()
+    deleteTask = (id) => {
         let uri = GlobalSetting.url + `user/delete/`;
         fetch(uri+`${id}`, {
             method: "GET",
             headers: { Authorization: `Bearer ${localStorage.usertoken}`}
-        })
-            .then(res => {
-
-                if (res.ok)
-                {
-                    // const notify = () => toast("Wow so easy !");
-                    // toast.success("Success Notification !", {
-                    //     position: toast.POSITION.TOP_CENTER
-                    // });
-                    this.getMovies();
-                }
+        }).then(res => {
+            if (res.ok)
+            {
+                GlobalSetting.createNotification('success','Deleted Successfully.');
+                this.getTasks();
+            }
 
             })
             .catch(err => console.error(err));
     }
 
+    editTask = (id) => {
+        fetchUser(id).then(res => {
+            this.setState({
+                name: res.user.name,
+                email: res.user.email,
+                password: res.user.password,
+            })
+        })
+        this.setState({ showModal2:true, showModal1:false})
+    }
+
     render() {
-
-
+        const {errors} = this.state;
         return (
-
             <>
-                <MDBBtn onClick={this.toggle} style={{float: 'right', marginTop:'20px'}} color="info">Add Task</MDBBtn>
-                <MDBModal isOpen={this.state.modal} toggle={this.toggle}>
-                    <MDBModalHeader toggle={this.toggle}>MDBModal title</MDBModalHeader>
-                    <MDBModalBody>
-                        <MDBInput  icon="user" />
-                    </MDBModalBody>
-                    <MDBModalFooter>
+                <MDBBtn onClick={() => this.setState({ showModal1:true, showModal2:false}) } style={{float: 'right', marginTop:'20px'}} data-target="#modalAdd" color="info" >Add Task</MDBBtn>
+                <MDBModal isOpen={this.state.showModal1}  toggle={this.addToggle}>
+                    <form noValidate onSubmit={this.onSubmit}>
+                        <MDBModalHeader toggle={this.addToggle}>Add User</MDBModalHeader>
+                        <MDBModalBody>
+                            <MDBInput  icon="user"   name="name"    onChange={this.handleChange} noValidate placeholder="User"  />
+                            {errors.name.length > 0 &&
+                            <span className='error'>{errors.name}</span>}
+                            <MDBInput  icon="lock"   name="password"   onChange={this.handleChange} noValidate  placeholder="Password " />
+                            {errors.password.length > 0 &&
+                            <span className='error'>{errors.password}</span>}
+                            <MDBInput  icon="inbox"  name="email"    onChange={this.handleChange} noValidate  />
+                            {errors.email.length > 0 &&
+                            <span className='error'>{errors.email}</span>}
+                        </MDBModalBody>
+                        <MDBModalFooter>
+                            <MDBBtn color="secondary" onClick={this.addToggle}>Close</MDBBtn>
+                            <MDBBtn type="submit"  color="primary">Save changes</MDBBtn>
+                        </MDBModalFooter>
+                    </form>
+                </MDBModal>
 
-                        <MDBBtn color="secondary" onClick={this.toggle}>Close</MDBBtn>
-                        <MDBBtn color="primary">Save changes</MDBBtn>
-                    </MDBModalFooter>
+                <MDBModal isOpen={this.state.showModal2}  onClose={() => this.setState({ showModal2:false})} tabindex="-1" role="dialog">
+                    <form noValidate onSubmit={this.onSubmit}>
+                        <MDBModalHeader toggle={this.editToggle}>Edit User</MDBModalHeader>
+                        <MDBModalBody>
+                            <MDBInput  icon="user"   name="name"  value={this.state.name}  onChange={this.handleChange} noValidate placeholder="User"  />
+                            {errors.name.length > 0 &&
+                            <span className='error'>{errors.name}</span>}
+                            <MDBInput  icon="lock"   name="password"  value={this.state.password} onChange={this.handleChange} noValidate  placeholder="Password " />
+                            {errors.password.length > 0 &&
+                            <span className='error'>{errors.password}</span>}
+                            <MDBInput  icon="inbox"  name="email"  value={this.state.email}  onChange={this.handleChange} noValidate  />
+                            {errors.email.length > 0 &&
+                            <span className='error'>{errors.email}</span>}
+                        </MDBModalBody>
+                        <MDBModalFooter>
+                            <MDBBtn color="secondary" onClick={this.editToggle}>Close</MDBBtn>
+                            <MDBBtn type="submit"  color="primary">Save changes</MDBBtn>
+                        </MDBModalFooter>
+                    </form>
                 </MDBModal>
                 <MDBDataTable
                     striped
@@ -133,14 +250,9 @@ class Task extends React.Component {
                     hover
                     data={{ columns: this.state.columns, rows: this.state.rows }}
                 />
-
+                <NotificationContainer/>
             </>
-
-
         );
-
-
-
     }
 };
 

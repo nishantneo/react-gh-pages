@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Link, withRouter } from 'react-router-dom'
+import SearchField from 'react-search-field'
 
 class Landing extends Component {
   logOut(e) {
@@ -8,7 +9,9 @@ class Landing extends Component {
     this.props.history.push(`/`)
   }
 
+
   render() {
+
     const loginRegLink = (
       <ul className="navbar-nav">
         <li className="nav-item">
@@ -42,16 +45,29 @@ class Landing extends Component {
           </Link>
         </li>
         <li className="nav-item">
+          <Link to="/shop" className="nav-link">
+              Shop
+          </Link>
+        </li>
+        <li className="nav-item">
            <Link  to="/contact" className="nav-link">
                Contact Us
            </Link>
         </li>
-        <li className="nav-item">
-          <a href="" onClick={this.logOut.bind(this)} className="nav-link">
-            Logout
-          </a>
-        </li>
+
+          <SearchField
+              placeholder="Search..."
+            //  onChange={this.onchange.bind(this)}
+              searchText="This is initial search text"
+              classNames="test-class"
+          />
+          <li className="nav-item" >
+              <a href="" onClick={this.logOut.bind(this)} className="nav-link">
+                  Logout
+              </a>
+          </li>
       </ul>
+
 
     )
 
@@ -80,6 +96,7 @@ class Landing extends Component {
               </Link>
             </li>
           </ul>
+
           {localStorage.usertoken ? userLink : loginRegLink}
         </div>
       </nav>

@@ -7,9 +7,6 @@ import axios from 'axios';
 const url = 'http://10.0.28.126:90/api/userlists';
 const baseUrl = 'http://jsonplaceholder.typicode.com/posts';
 
-
-
-
 class User extends Component {
 
     constructor(props) {
@@ -28,9 +25,6 @@ class User extends Component {
 
     }
 
-
-
-
     componentWillMount=async() => {
 
         await axios.get(url, {
@@ -40,10 +34,6 @@ class User extends Component {
             .then(response => response.data)
 
             .then(data => {
-
-              //  console.log(data);
-
-                // if (err) throw err;
 
                 this.setState({ users: data })
 
@@ -58,7 +48,6 @@ class User extends Component {
             });
 
     }
-
 
 
 
@@ -86,9 +75,6 @@ class User extends Component {
         return users;
 
     }
-
-
-
 
 
     render() {
@@ -174,8 +160,6 @@ class User extends Component {
     }
 
 }
-
-
 
 
 export default User;

@@ -10,6 +10,7 @@ import Profile from './components/Profile'
 import User from './components/User'
 import Contact from './components/Contact'
 import Task from './components/Task'
+import Shop from './components/Shop'
 
 
 class App extends Component {
@@ -26,6 +27,7 @@ class App extends Component {
             <Route exact path="/user" component={User} />
             <Route exact path="/contact" component={Contact} />
             <Route exact path="/task" component={Task} />
+            <Route exact path="/shop" component={Shop} />
           </div>
         </div>
       </Router>
