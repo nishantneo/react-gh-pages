@@ -2,9 +2,11 @@ import {NotificationManager} from "react-notifications";
 
 class GlobalSetting {
     constructor() {
+
         //setting global URL
 
         this.url = 'http://10.0.28.126:90/api/';
+
     }
 
     // Call for Notification

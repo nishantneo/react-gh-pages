@@ -1,6 +1,7 @@
 import React from "react";
 import {  MDBDataTable, MDBBtn, MDBInput,MDBContainer,MDBModal, MDBModalBody,MDBModalHeader, MDBModalFooter } from "mdbreact";
 import GlobalSetting from './GlobalSetting';
+
 import {add, getProfile,fetchUser} from './UserFunctions';
 import 'react-notifications/lib/notifications.css';
 import {NotificationContainer, NotificationManager} from 'react-notifications';
@@ -106,7 +107,7 @@ class Task extends React.Component {
             email: this.state.email,
             password: this.state.password
         }
-
+        console.log('hhh')
         if(validateForm(this.state.errors)) {
             add(newTask).then(res => {
                 if (res.ok)

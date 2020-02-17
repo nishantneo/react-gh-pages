@@ -1,10 +1,12 @@
 import axios from 'axios'
 
-const baseUrl='http://10.0.28.126:90/api/';
+import GlobalSetting from './GlobalSetting';
+let baseUrl=GlobalSetting.url ;
 export const register = newUser => {
-    let baseUrl='http://10.0.28.126:90/api/';
+
+    let baseUrl=GlobalSetting.url ;
     return axios
-        .post('api/register', newUser, {
+        .post('register', newUser, {
             headers: { 'Content-Type': 'application/json' }
         })
         .then(response => {
@@ -16,7 +18,7 @@ export const register = newUser => {
 }
 
 export const login = user => {
-    let baseUrl='http://10.0.28.126:90/api/';
+    let baseUrl=GlobalSetting.url ;
     return axios
         .post(
             baseUrl+'login',
@@ -38,7 +40,7 @@ export const login = user => {
 }
 
 export const getProfile = () => {
-    let baseUrl='http://10.0.28.126:90/api/';
+    let baseUrl=GlobalSetting.url ;
     return axios
         .get(baseUrl+'profile', {
             headers: { Authorization: `Bearer ${localStorage.usertoken}` }
@@ -53,7 +55,7 @@ export const getProfile = () => {
 }
 
 export const getUsers = () => {
-    let baseUrl='http://10.0.28.126:90/api/';
+    let baseUrl=GlobalSetting.url ;
     return axios
         .get(baseUrl+'userlists', {
             headers: { Authorization: `Bearer ${localStorage.usertoken}` }
