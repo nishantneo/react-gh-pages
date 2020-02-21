@@ -138,6 +138,13 @@ class Task extends React.Component {
             showModal2:false
         });
     }
+    deleteToggle = () => {
+
+        this.setState({
+            modal: !this.state.deleteModal,
+            deleteModal:false
+        });
+    }
 
     componentDidMount() {
         this.getTasks();
@@ -158,7 +165,7 @@ class Task extends React.Component {
                     id: item.id,
                     name: item.name,
                     email: item.email,
-                    delete: <MDBBtn color="info"  onClick={() => this.deleteTask(item.id)}>X</MDBBtn>,
+                    delete: <MDBBtn color="info" data-toggle="modal" onClick={() => this.deleteTaskModal(item.id)}>X</MDBBtn>,
                     edit: <MDBBtn color="info"  data-toggle="modal" onClick={() => this.editTask(item.id)}>Edit</MDBBtn>,
 
                 }));
@@ -172,7 +179,8 @@ class Task extends React.Component {
 
     updateInput = (value) => this.setState({ input: value });
 
-    deleteTask = (id) => {
+    deleteTask = () => {
+        let id=this.state.id;
         let uri = GlobalSetting.url + `user/delete/`;
         fetch(uri+`${id}`, {
             method: "GET",
@@ -197,6 +205,16 @@ class Task extends React.Component {
             })
         })
         this.setState({ showModal2:true, showModal1:false})
+    }
+
+    deleteTaskModal = (id) => {
+        fetchUser(id).then(res => {
+            this.setState({
+                id: res.user.id,
+            })
+        })
+
+        this.setState({ deleteModal:true, showModal1:false,id:id})
     }
 
     render() {
@@ -245,6 +263,20 @@ class Task extends React.Component {
                         </MDBModalFooter>
                     </form>
                 </MDBModal>
+
+                <MDBModal isOpen={this.state.deleteModal}  onClose={() => this.setState({ deleteModal:false})} tabindex="-1" role="dialog">
+                    <form noValidate onSubmit={this.deleteTask}>
+                        <MDBModalHeader toggle={this.deleteToggle}>Delete User</MDBModalHeader>
+                        <MDBModalBody>
+                           <h6>Are you sure Want to Delete this record..?</h6>
+                        </MDBModalBody>
+                        <MDBModalFooter>
+                            <MDBBtn color="secondary" onClick={this.deleteToggle}>Close</MDBBtn>
+                            <MDBBtn type="submit"  color="primary">Yes</MDBBtn>
+                        </MDBModalFooter>
+                    </form>
+                </MDBModal>
+
                 <MDBDataTable
                     striped
                     bordered

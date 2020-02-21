@@ -23,6 +23,11 @@ Route::group(['middleware' => ['cors']], function() {
     Route::post('task/add','UserController@addTask');
     Route::get('task/edit/{id}','UserController@editTask');
 
+    Route::get('productlists', 'ProductController@getAllProducts');
+    Route::post('product/add','ProductController@addProduct');
+    Route::get('product/edit/{id}','ProductController@editProduct');
+    Route::get('product/delete/{id}','ProductController@productDelete');
+
 });
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
